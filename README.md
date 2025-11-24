@@ -34,7 +34,7 @@ There is two ways to run the project:
 #### Via Poetry CLI
 
 ```bash
-poetry run python main.py
+poetry run python src/main.py
 ```
 
 #### Via virtual env
@@ -50,7 +50,7 @@ source .venv/bin/activate
 ##### Use python directly
 
 ```bash
-python main.py
+python src/main.py
 ```
 
 ## Filters
