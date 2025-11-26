@@ -24,7 +24,7 @@ query TournamentsQuery($perPage: Int, $coordinates: String!, $radius: String!) {
 }
 """
 
-"""
+VARIABLES = """
 {
   "perPage": 5,
   "coordinates": "48.853495,2.348391",
