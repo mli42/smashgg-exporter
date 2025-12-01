@@ -1,7 +1,24 @@
 TOURNAMENTS_QUERY = """
-query TournamentsQuery($perPage: Int, $coordinates: String!, $radius: String!) {
+query TournamentsQuery(
+  $afterDate: Timestamp,
+  $beforeDate: Timestamp,
+  $countryCode: String,
+  $addrState: String,
+  $perPage: Int
+) {
   tournaments(
-    query: {sortBy: "startAt desc", perPage: $perPage, filter: {location: {distanceFrom: $coordinates, distance: $radius}, past: true, videogameIds: [1386], countryCode: "FR", addrState: "IDF", afterDate: 1735689600, beforeDate: 1743465600}}
+    query: {
+      sortBy: "startAt desc",
+      perPage: $perPage,
+      filter: {
+        past: true,
+        videogameIds: [1386],
+        countryCode: $countryCode,
+        addrState: $addrState,
+        afterDate: $afterDate,
+        beforeDate: $beforeDate
+      }
+    }
   ) {
     pageInfo {
       total
@@ -12,6 +29,9 @@ query TournamentsQuery($perPage: Int, $coordinates: String!, $radius: String!) {
     nodes {
       id
       name
+      url
+      countryCode
+      addrState
       events(filter: {videogameId: [1386]}) {
         name
         videogame {
@@ -21,13 +41,5 @@ query TournamentsQuery($perPage: Int, $coordinates: String!, $radius: String!) {
       }
     }
   }
-}
-"""
-
-VARIABLES = """
-{
-  "perPage": 5,
-  "coordinates": "48.853495,2.348391",
-  "radius": "5mi"
 }
 """

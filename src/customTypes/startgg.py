@@ -27,6 +27,9 @@ class PageInfoObject(TypedDict):
 class Tournament(TypedDict):
     id: int
     name: str
+    url: str
+    countryCode: str
+    addrState: str
     events: list["Event"]
 
 

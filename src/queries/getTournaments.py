@@ -6,12 +6,12 @@ import requests
 
 from customTypes.startgg import StartggResponse, SuccessResponse
 
-from .tournamentsQuery import TOURNAMENTS_QUERY, VARIABLES
+from .tournamentsQuery import TOURNAMENTS_QUERY
 
 STARTGG_URL = "https://api.start.gg/gql/alpha"
 
 
-def get_tournaments() -> SuccessResponse:
+def get_tournaments(afterDate: int, beforeDate: int) -> SuccessResponse:
     STARTGG_TOKEN = os.getenv('STARTGG_TOKEN')
 
     HEADERS = {
@@ -21,7 +21,13 @@ def get_tournaments() -> SuccessResponse:
 
     BODY = {
         "query": TOURNAMENTS_QUERY,
-        "variables": VARIABLES
+        "variables": {
+            "afterDate": afterDate,
+            "beforeDate": beforeDate,
+            "countryCode": "FR",
+            "addrState": "IDF",
+            "perPage": 5,
+        }
     }
 
     retries = 3
