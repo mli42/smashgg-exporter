@@ -1,11 +1,13 @@
-import requests
-from dotenv import load_dotenv
-import os
-from queries.tournamentsQuery import TOURNAMENTS_QUERY, VARIABLES
 import asyncio
-from customTypes.startgg import StartggResponse, SuccessResponse
+import os
 from time import sleep
 from typing import cast
+
+import requests
+from dotenv import load_dotenv
+
+from customTypes.startgg import StartggResponse, SuccessResponse
+from queries.tournamentsQuery import TOURNAMENTS_QUERY, VARIABLES
 
 
 def get_tournaments(url, json, headers) -> SuccessResponse:
