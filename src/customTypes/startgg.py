@@ -43,7 +43,11 @@ class ExtensionObject(TypedDict):
 class ErrorResponse(TypedDict):
     success: bool
     message: str
+    errors: list["GraphQLError"]
 
+
+class GraphQLError(TypedDict):
+    message: str
 
 # endregion
 

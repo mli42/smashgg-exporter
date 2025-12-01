@@ -38,6 +38,9 @@ def get_tournaments() -> SuccessResponse:
             if (response.get('success') is False):
                 raise Exception(response.get('message'))
 
+            if (response.get('errors') is not None):
+                raise Exception(response.get('errors', [])[0]['message'])
+
             return cast(SuccessResponse, response)
         except Exception as e:
             print(f"Error with request. Retrying ({attempt+1}/{retries})...")
