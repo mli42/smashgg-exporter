@@ -3,17 +3,32 @@ from dotenv import load_dotenv
 import os
 from queries.tournamentsQuery import TOURNAMENTS_QUERY, VARIABLES
 import asyncio
-from json import loads
+from customTypes.startgg import StartggResponse, SuccessResponse
+from time import sleep
+from typing import cast
 
 
-async def get_tournaments(url, json, headers) -> requests.Response:
-    # print(json)
-    try:
-        response = requests.post(url, json=json, headers=headers)
-    except BaseException:
-        print("Error with request. Retrying")
-        return await get_tournaments(url, json, headers)
-    return response
+def get_tournaments(url, json, headers) -> SuccessResponse:
+    retries = 3
+
+    for attempt in range(retries):
+        if attempt != 0:
+            sleep(3)
+
+        try:
+            response: StartggResponse = requests \
+                .post(url, json=json, headers=headers) \
+                .json()
+
+            if (response.get('success') is False):
+                raise Exception(response.get('message'))
+
+            return cast(SuccessResponse, response)
+        except Exception as e:
+            print(f"Error with request. Retrying ({attempt+1}/{retries})...")
+            print(f"> {e}")
+
+    raise RuntimeError("Request failed after retries")
 
 
 async def main():
@@ -34,9 +49,13 @@ async def main():
         },
         headers=headers)
 
-    awaited = await response
+    queryComplexity = response['extensions']['queryComplexity']
+    pageInfo = response['data']['tournaments']['pageInfo']
+    tournaments = response['data']['tournaments']['nodes']
 
-    print(loads(awaited.text))
+    print(f"{queryComplexity = }")
+    print(f"{pageInfo = }")
+    print(tournaments)
 
 
 if __name__ == '__main__':
