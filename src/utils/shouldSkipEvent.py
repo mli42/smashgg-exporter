@@ -16,7 +16,7 @@ BLACKLISTED_PATTERNS = [
 ]
 
 
-def skipEvent(event: Event) -> bool:
+def should_skip_event(event: Event) -> bool:
     event_slug = event['slug'].split('/')[-1]
 
     return (

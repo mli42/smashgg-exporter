@@ -5,14 +5,14 @@ from dotenv import load_dotenv
 from customTypes.startgg import Tournament
 from getDateTimestamp import get_date_timestamp
 from queries.getTournaments import get_tournaments_iter
-from utils.skipEvent import skipEvent
+from utils.shouldSkipEvent import should_skip_event
 
 
 def handle_tournament(tournament: Tournament):
     for event in tournament['events']:
         event_slug = event['slug'].split('/')[-1]
 
-        if skipEvent(event):
+        if should_skip_event(event):
             # print(f"SKIPPING EVENT : {event_slug} ({event['id']})")
             continue
 
