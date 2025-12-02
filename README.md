@@ -53,16 +53,6 @@ source .venv/bin/activate
 python src/main.py
 ```
 
-## Filters
-
-- [x] Location: 48.853495,2.348391 (Paris, France)
-- [x] Location radius: 5mi
-- [x] Location: FR, IDF
-- [x] After: 1735689600 (1 January 2025 00:00:00)
-- [x] Before: 1743465600 (1 April 2025 00:00:00)
-- [x] Video Game: SSBU
-- [ ] Filter out events "Listes d'attentes", ladders(?)
-
 ## Misc
 
 ### Clear Poetry cache
