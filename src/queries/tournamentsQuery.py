@@ -4,12 +4,14 @@ query TournamentsQuery(
   $beforeDate: Timestamp,
   $countryCode: String,
   $addrState: String,
-  $perPage: Int
+  $perPage: Int,
+  $page: Int
 ) {
   tournaments(
     query: {
-      sortBy: "startAt desc",
+      sortBy: "startAt asc",
       perPage: $perPage,
+      page: $page,
       filter: {
         past: true,
         videogameIds: [1386],
