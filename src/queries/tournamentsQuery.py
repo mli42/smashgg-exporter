@@ -29,11 +29,17 @@ query TournamentsQuery(
     nodes {
       id
       name
-      url
+      url(relative: false, tab: "details")
+      city
       countryCode
       addrState
-      events(filter: {videogameId: [1386]}) {
+      events(filter: {videogameId: [1386], published: true}) {
+        id
         name
+        numEntrants
+        slug
+        startAt
+        state
         videogame {
           id
           name
