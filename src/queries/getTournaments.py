@@ -68,6 +68,7 @@ def get_tournaments_iter(
     totalPages = response['data']['tournaments']['pageInfo']['totalPages']
 
     for page in range(2, totalPages + 2):
+        # print(f"{response['extensions']['queryComplexity'] = }")
         pageInfo = response['data']['tournaments']['pageInfo']
         tournaments = response['data']['tournaments']['nodes']
 
