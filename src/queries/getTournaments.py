@@ -5,10 +5,9 @@ from typing import Generator, cast
 import requests
 
 from customTypes.startgg import StartggResponse, SuccessResponse, Tournament
+from utils.constants import STARTGG_API_URL
 
 from .tournamentsQuery import TOURNAMENTS_QUERY
-
-STARTGG_URL = "https://api.start.gg/gql/alpha"
 
 
 def get_tournaments(
@@ -43,7 +42,7 @@ def get_tournaments(
 
         try:
             response: StartggResponse = requests \
-                .post(STARTGG_URL, json=BODY, headers=HEADERS) \
+                .post(STARTGG_API_URL, json=BODY, headers=HEADERS) \
                 .json()
 
             if (response.get('success') is False):
