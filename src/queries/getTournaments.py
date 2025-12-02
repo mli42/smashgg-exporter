@@ -35,7 +35,7 @@ def get_tournaments(
         }
     }
 
-    retries = 3
+    retries = 1
 
     for attempt in range(retries):
         if attempt != 0:
@@ -57,7 +57,7 @@ def get_tournaments(
             print(f"Error with request. Retrying ({attempt+1}/{retries})...")
             print(f"> {e}")
 
-    raise RuntimeError("Request failed after retries")
+    raise RuntimeError("Request failed")
 
 
 def get_tournaments_iter(
