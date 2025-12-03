@@ -3,7 +3,7 @@ import asyncio
 from dotenv import load_dotenv
 
 from customTypes.startgg import Event, Tournament
-from queries.getTournaments import get_tournaments_iter
+from queries.tournaments.getTournaments import get_tournaments_iter
 from utils.constants import STARTGG_BASE_URL
 from utils.getDateTimestamp import get_date_timestamp
 from utils.shouldSkipEvent import should_skip_event
