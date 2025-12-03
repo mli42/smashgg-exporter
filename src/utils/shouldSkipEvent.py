@@ -7,6 +7,7 @@ BLACKLISTED_PATTERNS = [
     r'attente',
     r'melt-chill',
     r'double',
+    r'ladder',
     r'cpu',
     r'random',
     r'squadstrike',
