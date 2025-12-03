@@ -78,5 +78,5 @@ alembic revision --autogenerate -m "message"
 alembic upgrade head
 
 # Downgrade migration
-alembic downgrade
+alembic downgrade -1
 ```
