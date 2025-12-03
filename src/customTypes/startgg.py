@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-# region SuccessResponse
+# region SuccessTournamentsResponse
 
 """enum ActivityState
 CREATED: Activity is created
@@ -22,12 +22,12 @@ ActivityState = Literal[
 ]
 
 
-class SuccessResponse(TypedDict):
-    data: "DataObject"
+class SuccessTournamentsResponse(TypedDict):
+    data: "DataTournamentsObject"
     extensions: "ExtensionObject"
 
 
-class DataObject(TypedDict):
+class DataTournamentsObject(TypedDict):
     tournaments: "TournamentsObject"
 
 
@@ -62,6 +62,63 @@ class Event(TypedDict):
     state: ActivityState
 
 
+# region SuccessEventSetsResponse
+
+
+class SuccessEventSetsResponse(TypedDict):
+    data: "DataEventSetsObject"
+    extensions: "ExtensionObject"
+
+
+class DataEventSetsObject(TypedDict):
+    event: "EventObject"
+
+
+class EventObject(TypedDict):
+    sets: "EventSetsObject"
+
+
+class EventSetsObject(TypedDict):
+    pageInfo: "PageInfoObject"
+    nodes: list["EventSet"]
+
+
+class EventSet(TypedDict):
+    id: int
+    slots: list["Slot"]
+
+
+class Slot(TypedDict):
+    entrant: "Entrant"
+    standing: "Standing"
+
+
+class Entrant(TypedDict):
+    initialSeedNum: int
+    participants: list["Participants"]
+
+
+class Participants(TypedDict):
+    player: "Player"
+
+
+class Player(TypedDict):
+    id: int
+    gamerTag: str
+
+
+class Standing(TypedDict):
+    stats: "Stats"
+
+
+class Stats(TypedDict):
+    score: "Score"
+
+
+class Score(TypedDict):
+    value: int
+
+
 class ExtensionObject(TypedDict):
     queryComplexity: int
 
@@ -80,4 +137,6 @@ class GraphQLError(TypedDict):
 # endregion
 
 
-StartggResponse = SuccessResponse | ErrorResponse
+StartggTournamentsResponse = SuccessTournamentsResponse | ErrorResponse
+
+StartggEventSetsResponse = SuccessEventSetsResponse | ErrorResponse

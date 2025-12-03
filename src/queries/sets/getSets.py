@@ -4,18 +4,17 @@ from typing import Generator, cast
 
 import requests
 
-from customTypes.startgg import (StartggTournamentsResponse,
-                                 SuccessTournamentsResponse, Tournament)
+from customTypes.startgg import (EventSet, StartggEventSetsResponse,
+                                 SuccessEventSetsResponse)
 from utils.constants import STARTGG_API_URL
 
-from .tournamentsQuery import TOURNAMENTS_QUERY
+from .setsQuery import SETS_QUERY
 
 
-def get_tournaments(
-    afterDate: int,
-    beforeDate: int,
+def get_event_sets(
+    eventId: int,
     page: int,
-) -> SuccessTournamentsResponse:
+) -> SuccessEventSetsResponse:
     STARTGG_TOKEN = os.getenv('STARTGG_TOKEN')
 
     HEADERS = {
@@ -24,13 +23,10 @@ def get_tournaments(
     }
 
     BODY = {
-        "query": TOURNAMENTS_QUERY,
+        "query": SETS_QUERY,
         "variables": {
-            "afterDate": afterDate,
-            "beforeDate": beforeDate,
-            "countryCode": "FR",
-            "addrState": "IDF",
-            "perPage": 5,
+            "eventId": eventId,
+            "perPage": 10,
             "page": page,
         }
     }
@@ -42,7 +38,7 @@ def get_tournaments(
             sleep(2)
 
         try:
-            response: StartggTournamentsResponse = requests \
+            response: StartggEventSetsResponse = requests \
                 .post(STARTGG_API_URL, json=BODY, headers=HEADERS) \
                 .json()
 
@@ -52,7 +48,7 @@ def get_tournaments(
             if (response.get('errors') is not None):
                 raise Exception(response.get('errors', [])[0]['message'])
 
-            return cast(SuccessTournamentsResponse, response)
+            return cast(SuccessEventSetsResponse, response)
         except Exception as e:
             print(f"Error with request. Retrying ({attempt+1}/{retries})...")
             print(f"> {e}")
@@ -60,22 +56,21 @@ def get_tournaments(
     raise RuntimeError("Request failed")
 
 
-def get_tournaments_iter(
-    afterDate: int,
-    beforeDate: int,
-) -> Generator[Tournament, None, None]:
-    response = get_tournaments(afterDate, beforeDate, 1)
-    totalPages = response['data']['tournaments']['pageInfo']['totalPages']
+def get_event_sets_iter(
+    eventId: int,
+) -> Generator[EventSet, None, None]:
+    response = get_event_sets(eventId, 1)
+    totalPages = response['data']['event']['sets']['pageInfo']['totalPages']
 
     for page in range(2, totalPages + 2):
         # print(f"{response['extensions']['queryComplexity'] = }")
-        pageInfo = response['data']['tournaments']['pageInfo']
-        tournaments = response['data']['tournaments']['nodes']
+        pageInfo = response['data']['event']['sets']['pageInfo']
+        sets = response['data']['event']['sets']['nodes']
 
         print(f"{pageInfo = }")
 
-        for tournament in tournaments:
-            yield tournament
+        for set in sets:
+            yield set
 
         if (page != totalPages + 1):
-            response = get_tournaments(afterDate, beforeDate, page)
+            response = get_event_sets(eventId, page)
