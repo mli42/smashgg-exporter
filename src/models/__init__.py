@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 from typing import List
 
 from sqlalchemy import DateTime, Enum, ForeignKey, Integer, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import (DeclarativeBase, Mapped, MappedAsDataclass,
+                            mapped_column, relationship)
 
 
 class ActivityState(enum.Enum):
@@ -25,7 +26,7 @@ class ActivityState(enum.Enum):
     QUEUED = "QUEUED"
 
 
-class Base(DeclarativeBase):
+class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
 
@@ -38,12 +39,12 @@ class TournamentDB(Base):
     city: Mapped[str] = mapped_column(Text)
     country_code: Mapped[str] = mapped_column(Text)
     addr_state: Mapped[str] = mapped_column(Text)
-    imported: Mapped[bool] = mapped_column(default=False)
 
     events: Mapped[List["EventDB"]] = relationship(
         back_populates="tournament"
     )
 
+    imported: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
@@ -67,11 +68,15 @@ class EventDB(Base):
     slug: Mapped[str] = mapped_column(Text)
     start_at: Mapped[datetime] = mapped_column(DateTime)
     state: Mapped[ActivityState] = mapped_column(Enum(ActivityState))
+
+    tournament_id: Mapped[int] = mapped_column(
+        ForeignKey("tournament.id"), init=False
+    )
+    tournament: Mapped["TournamentDB"] = relationship(
+        back_populates="events", init=False
+    )
+
     imported: Mapped[bool] = mapped_column(default=False)
-
-    tournament_id: Mapped[int] = mapped_column(ForeignKey("tournament.id"))
-    tournament: Mapped["TournamentDB"] = relationship(back_populates="events")
-
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)

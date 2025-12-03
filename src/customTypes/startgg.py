@@ -1,25 +1,8 @@
-from typing import Literal, TypedDict
+from typing import TypedDict
+
+from models import ActivityState
 
 # region SuccessTournamentsResponse
-
-"""enum ActivityState
-CREATED: Activity is created
-ACTIVE: Activity is active or in progress
-COMPLETED: Activity is done
-READY: Activity is ready to be started
-INVALID: Activity is invalid
-CALLED: Activity, like a set, has been called to start
-QUEUED: Activity is queued to run
-"""
-ActivityState = Literal[
-    "CREATED",
-    "ACTIVE",
-    "COMPLETED",
-    "READY",
-    "INVALID",
-    "CALLED",
-    "QUEUED"
-]
 
 
 class SuccessTournamentsResponse(TypedDict):

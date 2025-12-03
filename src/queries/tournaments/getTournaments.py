@@ -1,11 +1,13 @@
 import os
+from datetime import datetime, timezone
 from time import sleep
 from typing import Generator, cast
 
 import requests
 
 from customTypes.startgg import (StartggTournamentsResponse,
-                                 SuccessTournamentsResponse, Tournament)
+                                 SuccessTournamentsResponse)
+from models import EventDB, TournamentDB
 from utils.constants import STARTGG_API_URL
 
 from .tournamentsQuery import TOURNAMENTS_QUERY
@@ -63,7 +65,7 @@ def get_tournaments(
 def get_tournaments_iter(
     afterDate: int,
     beforeDate: int,
-) -> Generator[Tournament, None, None]:
+) -> Generator[TournamentDB, None, None]:
     response = get_tournaments(afterDate, beforeDate, 1)
     totalPages = response['data']['tournaments']['pageInfo']['totalPages']
 
@@ -72,10 +74,31 @@ def get_tournaments_iter(
         pageInfo = response['data']['tournaments']['pageInfo']
         tournaments = response['data']['tournaments']['nodes']
 
-        print(f"{pageInfo = }")
+        print(f"> Tournaments {pageInfo = }")
 
         for tournament in tournaments:
-            yield tournament
+            yield TournamentDB(
+                id=tournament['id'],
+                name=tournament['name'],
+                url=tournament['url'],
+                city=tournament['city'],
+                country_code=tournament['countryCode'],
+                addr_state=tournament['addrState'],
+                events=[
+                    EventDB(
+                        id=event['id'],
+                        name=event['name'],
+                        num_entrants=event['numEntrants'],
+                        slug=event['slug'],
+                        start_at=(
+                            datetime
+                            .fromtimestamp(event['startAt'])
+                            .replace(tzinfo=timezone.utc)
+                        ),
+                        state=event['state'],
+                    ) for event in tournament['events']
+                ]
+            )
 
         if (page != totalPages + 1):
             response = get_tournaments(afterDate, beforeDate, page)

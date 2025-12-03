@@ -1,6 +1,6 @@
 import re
 
-from customTypes.startgg import Event
+from models import EventDB
 
 BLACKLISTED_PATTERNS = [
     r'side-event',
@@ -17,10 +17,10 @@ BLACKLISTED_PATTERNS = [
 ]
 
 
-def should_skip_event(event: Event) -> bool:
-    event_slug = event['slug'].split('/')[-1]
+def should_skip_event(event: EventDB) -> bool:
+    event_slug = event.slug.split('/')[-1]
 
     return (
-        event['state'] != 'COMPLETED' or
+        event.state != 'COMPLETED' or
         any(re.search(pattern, event_slug) for pattern in BLACKLISTED_PATTERNS)
     )
