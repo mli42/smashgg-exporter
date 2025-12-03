@@ -65,9 +65,10 @@ class EventDB(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(Text)
     num_entrants: Mapped[int] = mapped_column(Integer)
-    slug: Mapped[str] = mapped_column(Text)
     start_at: Mapped[datetime] = mapped_column(DateTime)
-    state: Mapped[ActivityState] = mapped_column(Enum(ActivityState))
+
+    slug: str
+    state: ActivityState
 
     tournament_id: Mapped[int] = mapped_column(
         ForeignKey("tournament.id"), init=False
