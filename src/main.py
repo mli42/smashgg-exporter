@@ -1,5 +1,3 @@
-import asyncio
-
 from dotenv import load_dotenv
 
 from customTypes.startgg import Event, Tournament
@@ -50,7 +48,7 @@ def handle_tournament(tournament: Tournament):
         handle_event(event)
 
 
-async def main():
+def main():
     afterDate = get_date_timestamp("01/01/2025")
     beforeDate = get_date_timestamp("01/04/2025")
 
@@ -60,4 +58,4 @@ async def main():
 
 if __name__ == '__main__':
     load_dotenv()
-    asyncio.run(main())
+    main()
