@@ -1,6 +1,6 @@
-"""Add tournament + event tables
+"""Add tournament and event tables
 
-Revision ID: 61876f1577c7
+Revision ID: 53545f86378f
 Revises:
 Create Date: 2025-12-03 17:58:34.517733+00:00
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '61876f1577c7'
+revision: str = '53545f86378f'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -41,8 +41,8 @@ def upgrade() -> None:
     sa.Column('slug', sa.Text(), nullable=False),
     sa.Column('start_at', sa.DateTime(), nullable=False),
     sa.Column('state', sa.Enum('CREATED', 'ACTIVE', 'COMPLETED', 'READY', 'INVALID', 'CALLED', 'QUEUED', name='activitystate'), nullable=False),
-    sa.Column('imported', sa.Boolean(), nullable=False),
     sa.Column('tournament_id', sa.Integer(), nullable=False),
+    sa.Column('imported', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['tournament_id'], ['tournament.id'], ),
@@ -59,4 +59,14 @@ def downgrade() -> None:
     op.drop_table('event')
     op.drop_index(op.f('ix_tournament_id'), table_name='tournament')
     op.drop_table('tournament')
+    sa.Enum(
+        'CREATED',
+        'ACTIVE',
+        'COMPLETED',
+        'READY',
+        'INVALID',
+        'CALLED',
+        'QUEUED',
+        name='activitystate'
+    ).drop(op.get_bind())
     # ### end Alembic commands ###
