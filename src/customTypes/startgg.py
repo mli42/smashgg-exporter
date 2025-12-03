@@ -116,7 +116,8 @@ class Stats(TypedDict):
 
 
 class Score(TypedDict):
-    value: int
+    value: None | int
+    """'-1' is DQ, the opponent of a DQ has None"""
 
 
 class ExtensionObject(TypedDict):
