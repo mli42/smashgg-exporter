@@ -55,14 +55,28 @@ python src/main.py
 
 ## Misc
 
-### Clear Poetry cache
+### Poetry
 
 ```bash
+# Clear Poetry cache
 poetry cache clear --all .
+
+# Delete all virtual environments
+poetry env remove --all
 ```
 
-### Delete all virtual environments
+### Alembic
 
 ```bash
-poetry env remove --all
+# Get information
+alembic current/history
+
+# Create a new migration
+alembic revision --autogenerate -m "message"
+
+# Apply migration
+alembic upgrade head
+
+# Downgrade migration
+alembic downgrade
 ```
