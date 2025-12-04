@@ -110,21 +110,23 @@ class SetDB(Base):
         ForeignKey("player.id"), init=False
     )
     winner_player: Mapped["PlayerDB"] = relationship(
-        back_populates="winning_sets"
+        back_populates="winning_sets",
+        foreign_keys=[winner_player_id]
     )
 
     loser_player_id: Mapped[int] = mapped_column(
         ForeignKey("player.id"), init=False
     )
     loser_player: Mapped["PlayerDB"] = relationship(
-        back_populates="losing_sets"
+        back_populates="losing_sets",
+        foreign_keys=[loser_player_id]
     )
 
     event_id: Mapped[int] = mapped_column(
         ForeignKey("event.id"), index=True, init=False
     )
     event: Mapped["EventDB"] = relationship(
-        back_populates="sets", init=False
+        back_populates="sets"
     )
 
     def __repr__(self) -> str:
@@ -138,10 +140,14 @@ class PlayerDB(Base):
     gamer_tag: Mapped[str] = mapped_column(Text)
 
     winning_sets: Mapped[List["SetDB"]] = relationship(
-        back_populates="winner_player", init=False
+        back_populates="winner_player",
+        foreign_keys="SetDB.winner_player_id",
+        init=False
     )
     losing_sets: Mapped[List["SetDB"]] = relationship(
-        back_populates="loser_player", init=False
+        back_populates="loser_player",
+        foreign_keys="SetDB.loser_player_id",
+        init=False
     )
 
     def __repr__(self) -> str:

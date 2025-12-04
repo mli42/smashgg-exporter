@@ -1,6 +1,6 @@
 import re
 
-from models import EventDB
+from models import ActivityState, EventDB
 
 BLACKLISTED_PATTERNS = [
     r'side-event',
@@ -21,6 +21,6 @@ def should_skip_event(event: EventDB) -> bool:
     event_slug = event.slug.split('/')[-1]
 
     return (
-        event.state != 'COMPLETED' or
+        event.state != ActivityState.COMPLETED or
         any(re.search(pattern, event_slug) for pattern in BLACKLISTED_PATTERNS)
     )

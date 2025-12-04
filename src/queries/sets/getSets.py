@@ -67,10 +67,10 @@ def get_event_sets_iter(
         pageInfo = response['data']['event']['sets']['pageInfo']
         sets = response['data']['event']['sets']['nodes']
 
-        print(f"{pageInfo = }")
+        print(f"> Sets {pageInfo = }")
 
-        for set in sets:
-            yield set
+        for event_set in sets:
+            yield event_set
 
         if (page != totalPages + 1):
             response = get_event_sets(eventId, page)
