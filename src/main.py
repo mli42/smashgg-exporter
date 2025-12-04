@@ -159,7 +159,7 @@ if __name__ == '__main__':
     session = SessionLocal()
 
     def signal_handler(sig, frame):
-        print('Saving before exiting...')
+        print(' Saving before exiting...')
         session.commit()
         session.close()
         sys.exit(0)
