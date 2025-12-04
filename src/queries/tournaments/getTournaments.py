@@ -32,7 +32,7 @@ def get_tournaments(
             "beforeDate": beforeDate,
             "countryCode": "FR",
             "addrState": "IDF",
-            "perPage": 5,
+            "perPage": 50,
             "page": page,
         }
     }
@@ -70,11 +70,11 @@ def get_tournaments_iter(
     totalPages = response['data']['tournaments']['pageInfo']['totalPages']
 
     for page in range(2, totalPages + 2):
-        # print(f"{response['extensions']['queryComplexity'] = }")
+        queryComplexity = response['extensions']['queryComplexity']
         pageInfo = response['data']['tournaments']['pageInfo']
         tournaments = response['data']['tournaments']['nodes']
 
-        print(f"> Tournaments {pageInfo = }")
+        print(f"> Tournaments {pageInfo = } | {queryComplexity = }")
 
         for tournament in tournaments:
             yield TournamentDB(

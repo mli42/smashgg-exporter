@@ -26,7 +26,7 @@ def get_event_sets(
         "query": SETS_QUERY,
         "variables": {
             "eventId": eventId,
-            "perPage": 10,
+            "perPage": 40,
             "page": page,
         }
     }
@@ -63,11 +63,11 @@ def get_event_sets_iter(
     totalPages = response['data']['event']['sets']['pageInfo']['totalPages']
 
     for page in range(2, totalPages + 2):
-        # print(f"{response['extensions']['queryComplexity'] = }")
+        queryComplexity = response['extensions']['queryComplexity']
         pageInfo = response['data']['event']['sets']['pageInfo']
         sets = response['data']['event']['sets']['nodes']
 
-        print(f"> Sets {pageInfo = }")
+        print(f"> Sets {pageInfo = } | {queryComplexity = }")
 
         for event_set in sets:
             yield event_set
