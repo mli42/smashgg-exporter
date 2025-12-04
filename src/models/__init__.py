@@ -76,6 +76,10 @@ class EventDB(Base):
         back_populates="events", init=False
     )
 
+    sets: Mapped[List["SetDB"]] = relationship(
+        back_populates="event", init=False
+    )
+
     imported: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -89,3 +93,56 @@ class EventDB(Base):
 
     def __repr__(self) -> str:
         return f"EventDB(id={self.id!r}, name={self.name!r})"
+
+
+class SetDB(Base):
+    __tablename__ = "set"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+
+    winner_seed: Mapped[int] = mapped_column(Integer)
+    loser_seed: Mapped[int] = mapped_column(Integer)
+
+    winner_score: Mapped[int] = mapped_column(Integer)
+    loser_score: Mapped[int] = mapped_column(Integer)
+
+    winner_player_id: Mapped[int] = mapped_column(
+        ForeignKey("player.id"), init=False
+    )
+    winner_player: Mapped["PlayerDB"] = relationship(
+        back_populates="winning_sets"
+    )
+
+    loser_player_id: Mapped[int] = mapped_column(
+        ForeignKey("player.id"), init=False
+    )
+    loser_player: Mapped["PlayerDB"] = relationship(
+        back_populates="losing_sets"
+    )
+
+    event_id: Mapped[int] = mapped_column(
+        ForeignKey("event.id"), index=True, init=False
+    )
+    event: Mapped["EventDB"] = relationship(
+        back_populates="sets", init=False
+    )
+
+    def __repr__(self) -> str:
+        return f"SetDB(id={self.id!r})"
+
+
+class PlayerDB(Base):
+    __tablename__ = "player"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    gamer_tag: Mapped[str] = mapped_column(Text)
+
+    winning_sets: Mapped[List["SetDB"]] = relationship(
+        back_populates="winner_player", init=False
+    )
+    losing_sets: Mapped[List["SetDB"]] = relationship(
+        back_populates="loser_player", init=False
+    )
+
+    def __repr__(self) -> str:
+        return f"PlayerDB(id={self.id!r}, gamer_tag={self.gamer_tag!r})"
