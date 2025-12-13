@@ -14,6 +14,7 @@ dependencies = [
     "alembic (>=1.17.2,<2.0.0)",
     "psycopg2-binary (>=2.9.11,<3.0.0)",
     "tzdata (>=2025.2,<2026.0)",
+    "argparse (>=1.4.0,<2.0.0)",
 ]
 
 [tool.poetry]

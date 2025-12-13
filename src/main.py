@@ -1,3 +1,4 @@
+import argparse
 import os
 import signal
 import sys
@@ -121,9 +122,9 @@ def handle_tournament(tournament: TournamentDB, session: Session):
         session.commit()
 
 
-def main(session: Session):
-    afterDate = get_date_timestamp("01/01/2025")
-    beforeDate = get_date_timestamp("01/04/2025")
+def main(session: Session, args: argparse.Namespace):
+    afterDate = args.startDate
+    beforeDate = args.endDate
 
     for tournament in get_tournaments_iter(afterDate, beforeDate):
         saved_tournament = (
@@ -147,9 +148,7 @@ def main(session: Session):
         session.commit()
 
 
-if __name__ == '__main__':
-    load_dotenv()
-
+def load_database() -> Session:
     DATABASE_URL = os.getenv('DATABASE_URL')
     if not DATABASE_URL:
         raise Exception("DATABASE_URL is missing")
@@ -158,6 +157,10 @@ if __name__ == '__main__':
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
 
+    return session
+
+
+def load_signal_handler(session: Session):
     def signal_handler(sig, frame):
         print(' Saving before exiting...')
         session.commit()
@@ -166,7 +169,38 @@ if __name__ == '__main__':
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    main(session)
+
+def load_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description='Fetches sets from start.gg and saves them into a postgres database'
+    )
+
+    parser.add_argument(
+        '--startDate',
+        action='store',
+        default=get_date_timestamp("01/01/2025"),
+        type=lambda s: get_date_timestamp(s),
+        help='fetch from startDate %%d/%%m/%%Y (default: 01/01/2025)'
+    )
+    parser.add_argument(
+        '--endDate',
+        action='store',
+        default=get_date_timestamp("01/04/2025"),
+        type=lambda s: get_date_timestamp(s),
+        help='fetch from endDate %%d/%%m/%%Y (default: 01/04/2025)'
+    )
+
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == '__main__':
+    args = load_args()
+    load_dotenv()
+    session = load_database()
+    load_signal_handler(session)
+
+    main(session, args)
 
     session.commit()
     session.close()
