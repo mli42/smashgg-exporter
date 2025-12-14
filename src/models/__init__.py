@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import DateTime, Enum, ForeignKey, Integer, Text
 from sqlalchemy.orm import (DeclarativeBase, Mapped, MappedAsDataclass,
@@ -36,7 +36,7 @@ class TournamentDB(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(Text)
     url: Mapped[str] = mapped_column(Text)
-    city: Mapped[str] = mapped_column(Text)
+    city: Mapped[Optional[str]] = mapped_column(Text)
     country_code: Mapped[str] = mapped_column(Text)
     addr_state: Mapped[str] = mapped_column(Text)
 
