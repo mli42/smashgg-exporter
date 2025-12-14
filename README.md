@@ -39,19 +39,34 @@ poetry run python src/main.py
 
 #### Via virtual env
 
-##### Activate virtual env
-
-To do only once per terminal session:
+Activate virtual env (only once per terminal):
 
 ```bash
 source .venv/bin/activate
 ```
 
-##### Use python directly
+Then use python directly:
 
 ```bash
 python src/main.py
 ```
+
+### Usage
+
+```
+$ python src/main.py --help
+
+usage: main.py [-h] [--startDate STARTDATE] [--endDate ENDDATE]
+
+Fetches sets from start.gg and saves them into a postgres database
+
+options:
+  -h, --help            show this help message and exit
+  --startDate STARTDATE
+                        fetch from startDate DD/MM/YYYY (default: 01/01/2025)
+  --endDate ENDDATE     fetch up to endDate DD/MM/YYYY (default: 01/04/2025)
+```
+
 
 ## Misc
 
