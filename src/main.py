@@ -25,12 +25,8 @@ class Player(TypedDict):
 
 
 def get_player_db(player: Player, session: Session) -> PlayerDB:
-    saved_player_db = (
-        session
-        .execute(
-            select(PlayerDB).where(PlayerDB.id == player['id'])
-        )
-        .scalar()
+    saved_player_db = session.scalar(
+        select(PlayerDB).where(PlayerDB.id == player['id'])
     )
 
     if saved_player_db is None:
@@ -87,12 +83,8 @@ def handle_event(event: EventDB, session: Session):
     set_count = 0
     last_saved_set_count = 0
     for event_set in get_event_sets_iter(event.id):
-        saved_set_db = (
-            session
-            .execute(
-                select(SetDB).where(SetDB.id == event_set['id'])
-            )
-            .scalar()
+        saved_set_db = session.scalar(
+            select(SetDB).where(SetDB.id == event_set['id'])
         )
 
         if saved_set_db:
@@ -127,12 +119,8 @@ def main(session: Session, args: argparse.Namespace):
     beforeDate = args.endDate
 
     for tournament in get_tournaments_iter(afterDate, beforeDate):
-        saved_tournament = (
-            session
-            .execute(
-                select(TournamentDB).where(TournamentDB.id == tournament.id)
-            )
-            .scalar()
+        saved_tournament = session.scalar(
+            select(TournamentDB).where(TournamentDB.id == tournament.id)
         )
 
         if saved_tournament is None:
@@ -148,12 +136,12 @@ def main(session: Session, args: argparse.Namespace):
         session.commit()
 
 
-def load_database() -> Session:
+def load_database(echo=False) -> Session:
     DATABASE_URL = os.getenv('DATABASE_URL')
     if not DATABASE_URL:
         raise Exception("DATABASE_URL is missing")
 
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(DATABASE_URL, echo=echo)
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
 
