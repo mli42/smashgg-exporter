@@ -180,14 +180,14 @@ def load_args() -> argparse.Namespace:
         action='store',
         default=get_date_timestamp("01/01/2025"),
         type=lambda s: get_date_timestamp(s),
-        help='fetch from startDate %%d/%%m/%%Y (default: 01/01/2025)'
+        help='fetch from startDate DD/MM/YYYY (default: 01/01/2025)'
     )
     parser.add_argument(
         '--endDate',
         action='store',
         default=get_date_timestamp("01/04/2025"),
         type=lambda s: get_date_timestamp(s),
-        help='fetch from endDate %%d/%%m/%%Y (default: 01/04/2025)'
+        help='fetch up to endDate DD/MM/YYYY (default: 01/04/2025)'
     )
 
     args = parser.parse_args()
