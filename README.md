@@ -91,6 +91,7 @@ options:
   --startDate STARTDATE
                         fetch from startDate DD/MM/YYYY (default: 01/01/2025)
   --endDate ENDDATE     fetch up to endDate DD/MM/YYYY (default: 01/04/2025)
+  --out OUT             csv output filename to `output/{timestamp}-{out}` (default: `output/{timestamp}.csv`)
 ```
 
 

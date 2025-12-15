@@ -1,4 +1,5 @@
 import argparse
+import csv
 import datetime
 from datetime import date
 
@@ -42,9 +43,40 @@ def fetch_sets(args: argparse.Namespace):
 def main(args: argparse.Namespace):
     sets = fetch_sets(args)
 
-    for set_db in sets:
-        print(f"{set_db.event.tournament.name = }")
-        break
+    now_timestamp = datetime.datetime.now().timestamp()
+    output_filename = f"{now_timestamp}-{args.out}" if args.out else f"{now_timestamp}.csv"
+
+    with open(f"output/{output_filename}", 'w', newline='') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+
+        wr.writerow([
+            'set_id',
+            'event_date',
+            'tournament',
+            'event'
+            'event_entrants',
+            'winner',
+            'loser',
+            'winner_seed',
+            'loser_seed',
+            'winner_score',
+            'loser_score',
+        ])
+
+        for set_db in sets:
+            wr.writerow([
+                set_db.id,
+                set_db.event.start_at.replace(tzinfo=datetime.timezone.utc),
+                f"{set_db.event.tournament.name} ({set_db.event.tournament.id})",
+                f"{set_db.event.name} ({set_db.event.id})",
+                set_db.event.num_entrants,
+                f"{set_db.winner_player.gamer_tag} ({set_db.winner_player.id})",
+                f"{set_db.loser_player.gamer_tag} ({set_db.loser_player.id})",
+                set_db.winner_seed,
+                set_db.loser_seed,
+                set_db.winner_score,
+                set_db.loser_score,
+            ])
 
 
 def load_args() -> argparse.Namespace:
@@ -65,6 +97,13 @@ def load_args() -> argparse.Namespace:
         default=get_date_timestamp("01/04/2025"),
         type=lambda s: get_date_timestamp(s),
         help='fetch up to endDate DD/MM/YYYY (default: 01/04/2025)'
+    )
+    parser.add_argument(
+        '--out',
+        action='store',
+        default=None,
+        type=str,
+        help='csv output filename to `output/{timestamp}-{out}` (default: `output/{timestamp}.csv`)'
     )
 
     args = parser.parse_args()
