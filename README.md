@@ -107,6 +107,25 @@ options:
 ## Misc
 
 <details>
+<summary>start.gg addrState in France</summary>
+
+- `Auvergne-Rhône-Alpes`
+- `Bourgogne-Franche-Comté`
+- `Bretagne`
+- `Centre-Val de Loire`
+- `Grand Est`
+- `Hauts-de-France`
+- `Île-de-France`, `IDF`
+- `Normandie`
+- `Nouvelle-Aquitaine`
+- `Occitanie`
+- `Pays de la Loire`
+- `Provence-Alpes-Côte d'Azur`
+
+:warning: `IDF` and `Île-de-France` behave like two different addrState and have to be fetched separately
+</details>
+
+<details>
 <summary>Poetry</summary>
 
 ```bash
