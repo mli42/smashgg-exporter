@@ -8,19 +8,20 @@ from sqlalchemy import DATE, cast, select
 from sqlalchemy.orm import joinedload, raiseload
 
 from main import load_database
-from models import EventDB, SetDB
+from models import EventDB, SetDB, TournamentDB
 from utils.getDateTimestamp import get_date_timestamp
+from utils.parse_str_or_none import parse_str_or_none
 
 
 def fetch_sets(args: argparse.Namespace):
     load_dotenv()
     session = load_database()
 
-    fetch_time_start = datetime.datetime.now()
-    sets = session.scalars(
+    stmt = (
         select(SetDB)
         .join(EventDB)
-        .filter(
+        .join(TournamentDB)
+        .where(
             cast(EventDB.start_at, DATE) >= date.fromtimestamp(args.startDate),
             cast(EventDB.start_at, DATE) <= date.fromtimestamp(args.endDate),
         )
@@ -30,7 +31,15 @@ def fetch_sets(args: argparse.Namespace):
             joinedload(SetDB.loser_player),
             raiseload("*")
         )
-    ).all()
+    )
+
+    if args.countryCode:
+        stmt = stmt.where(TournamentDB.country_code == args.countryCode)
+    if args.addrState:
+        stmt = stmt.where(TournamentDB.addr_state == args.addrState)
+
+    fetch_time_start = datetime.datetime.now()
+    sets = session.scalars(stmt).all()
     fetch_time_end = datetime.datetime.now()
     delta_time = fetch_time_end - fetch_time_start
 
@@ -97,6 +106,20 @@ def load_args() -> argparse.Namespace:
         default=get_date_timestamp("01/04/2025"),
         type=lambda s: get_date_timestamp(s),
         help='fetch up to endDate DD/MM/YYYY (default: 01/04/2025)'
+    )
+    parser.add_argument(
+        '--countryCode',
+        action='store',
+        default="FR",
+        type=parse_str_or_none,
+        help='CountryCode of the tournament, can be set to `None` (default: FR)'
+    )
+    parser.add_argument(
+        '--addrState',
+        action='store',
+        default="IDF",
+        type=parse_str_or_none,
+        help='AddrState of the tournament, can be set to `None` (default: IDF)'
     )
     parser.add_argument(
         '--out',
