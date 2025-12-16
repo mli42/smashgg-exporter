@@ -53,9 +53,10 @@ def main(args: argparse.Namespace):
     sets = fetch_sets(args)
 
     now_timestamp = datetime.datetime.now().timestamp()
-    output_filename = f"{now_timestamp}-{args.out}" if args.out else f"{now_timestamp}.csv"
+    output_filename = f"{now_timestamp}-{args.outSuffix}.csv" if args.outSuffix else f"{now_timestamp}.csv"
+    output_path = f"output/{output_filename}"
 
-    with open(f"output/{output_filename}", 'w', newline='') as myfile:
+    with open(output_path, 'w', newline='') as myfile:
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
 
         wr.writerow([
@@ -86,6 +87,7 @@ def main(args: argparse.Namespace):
                 set_db.winner_score,
                 set_db.loser_score,
             ])
+    print(f"> Exported data to {output_path}")
 
 
 def load_args() -> argparse.Namespace:
@@ -122,11 +124,11 @@ def load_args() -> argparse.Namespace:
         help='AddrState of the tournament, can be set to `None` (default: IDF)'
     )
     parser.add_argument(
-        '--out',
+        '--outSuffix',
         action='store',
         default=None,
         type=str,
-        help='csv output filename to `output/{timestamp}-{out}` (default: `output/{timestamp}.csv`)'
+        help='csv output filename to `output/{timestamp}-{outSuffix}.csv` (default: `output/{timestamp}.csv`)'
     )
 
     args = parser.parse_args()
