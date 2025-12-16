@@ -75,8 +75,8 @@ Fetches sets from start.gg and saves them into a postgres database
 options:
   -h, --help            show this help message and exit
   --startDate STARTDATE
-                        fetch from startDate DD/MM/YYYY (default: 01/01/2025)
-  --endDate ENDDATE     fetch up to endDate DD/MM/YYYY (default: 01/04/2025)
+                        fetch from startDate DD-MM-YYYY (default: 01-01-2025)
+  --endDate ENDDATE     fetch up to endDate DD-MM-YYYY (default: 01-04-2025)
   --countryCode COUNTRYCODE
                         CountryCode of the tournament, can be set to `None` (default: FR)
   --addrState ADDRSTATE
@@ -93,8 +93,8 @@ Fetches sets from database and saves them in a local csv
 options:
   -h, --help            show this help message and exit
   --startDate STARTDATE
-                        fetch from startDate DD/MM/YYYY (default: 01/01/2025)
-  --endDate ENDDATE     fetch up to endDate DD/MM/YYYY (default: 01/04/2025)
+                        fetch from startDate DD-MM-YYYY (default: 01-01-2025)
+  --endDate ENDDATE     fetch up to endDate DD-MM-YYYY (default: 01-04-2025)
   --countryCode COUNTRYCODE
                         CountryCode of the tournament, can be set to `None` (default: FR)
   --addrState ADDRSTATE

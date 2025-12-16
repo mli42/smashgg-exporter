@@ -98,16 +98,16 @@ def load_args() -> argparse.Namespace:
     parser.add_argument(
         '--startDate',
         action='store',
-        default=get_date_timestamp("01/01/2025"),
+        default=get_date_timestamp("01-01-2025"),
         type=lambda s: get_date_timestamp(s),
-        help='fetch from startDate DD/MM/YYYY (default: 01/01/2025)'
+        help='fetch from startDate DD-MM-YYYY (default: 01-01-2025)'
     )
     parser.add_argument(
         '--endDate',
         action='store',
-        default=get_date_timestamp("01/04/2025"),
+        default=get_date_timestamp("01-04-2025"),
         type=lambda s: get_date_timestamp(s),
-        help='fetch up to endDate DD/MM/YYYY (default: 01/04/2025)'
+        help='fetch up to endDate DD-MM-YYYY (default: 01-04-2025)'
     )
     parser.add_argument(
         '--countryCode',
