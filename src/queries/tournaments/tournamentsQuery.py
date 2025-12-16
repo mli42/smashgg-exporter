@@ -18,7 +18,8 @@ query TournamentsQuery(
         countryCode: $countryCode,
         addrState: $addrState,
         afterDate: $afterDate,
-        beforeDate: $beforeDate
+        beforeDate: $beforeDate,
+        hasOnlineEvents: false,
       }
     }
   ) {

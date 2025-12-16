@@ -14,6 +14,7 @@ from queries.sets.getSets import get_event_sets_iter
 from queries.tournaments.getTournaments import get_tournaments_iter
 from utils.constants import STARTGG_BASE_URL
 from utils.getDateTimestamp import get_date_timestamp
+from utils.parse_str_or_none import parse_str_or_none
 from utils.shouldSkipEvent import should_skip_event
 
 
@@ -115,10 +116,14 @@ def handle_tournament(tournament: TournamentDB, session: Session):
 
 
 def main(session: Session, args: argparse.Namespace):
-    afterDate = args.startDate
-    beforeDate = args.endDate
+    tournaments = get_tournaments_iter({
+        'afterDate': args.startDate,
+        'beforeDate': args.endDate,
+        'countryCode': args.countryCode,
+        'addrState': args.addrState,
+    })
 
-    for tournament in get_tournaments_iter(afterDate, beforeDate):
+    for tournament in tournaments:
         saved_tournament = session.scalar(
             select(TournamentDB).where(TournamentDB.id == tournament.id)
         )
@@ -176,6 +181,20 @@ def load_args() -> argparse.Namespace:
         default=get_date_timestamp("01/04/2025"),
         type=lambda s: get_date_timestamp(s),
         help='fetch up to endDate DD/MM/YYYY (default: 01/04/2025)'
+    )
+    parser.add_argument(
+        '--countryCode',
+        action='store',
+        default="FR",
+        type=parse_str_or_none,
+        help='CountryCode of the tournament, can be set to `None` (default: FR)'
+    )
+    parser.add_argument(
+        '--addrState',
+        action='store',
+        default="IDF",
+        type=parse_str_or_none,
+        help='AddrState of the tournament, can be set to `None` (default: IDF)'
     )
 
     args = parser.parse_args()

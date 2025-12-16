@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timezone
 from time import sleep
-from typing import Generator, cast
+from typing import Generator, TypedDict, cast
 
 import requests
 
@@ -13,9 +13,15 @@ from utils.constants import STARTGG_API_URL
 from .tournamentsQuery import TOURNAMENTS_QUERY
 
 
+class GetTournamentsParameters(TypedDict):
+    afterDate: int
+    beforeDate: int
+    countryCode: str
+    addrState: str
+
+
 def get_tournaments(
-    afterDate: int,
-    beforeDate: int,
+    params: GetTournamentsParameters,
     page: int,
 ) -> SuccessTournamentsResponse:
     STARTGG_TOKEN = os.getenv('STARTGG_TOKEN')
@@ -28,14 +34,17 @@ def get_tournaments(
     BODY = {
         "query": TOURNAMENTS_QUERY,
         "variables": {
-            "afterDate": afterDate,
-            "beforeDate": beforeDate,
-            "countryCode": "FR",
-            "addrState": "IDF",
+            "afterDate": params["afterDate"],
+            "beforeDate": params["beforeDate"],
             "perPage": 50,
             "page": page,
         }
     }
+
+    if params['countryCode']:
+        BODY['variables']['countryCode'] = params['countryCode']
+    if params['addrState']:
+        BODY['variables']['addrState'] = params['addrState']
 
     retries = 1
 
@@ -63,10 +72,9 @@ def get_tournaments(
 
 
 def get_tournaments_iter(
-    afterDate: int,
-    beforeDate: int,
+    params: GetTournamentsParameters
 ) -> Generator[TournamentDB, None, None]:
-    response = get_tournaments(afterDate, beforeDate, 1)
+    response = get_tournaments(params, 1)
     totalPages = response['data']['tournaments']['pageInfo']['totalPages']
 
     for page in range(2, totalPages + 2):
@@ -101,4 +109,4 @@ def get_tournaments_iter(
             )
 
         if (page != totalPages + 1):
-            response = get_tournaments(afterDate, beforeDate, page)
+            response = get_tournaments(params, page)

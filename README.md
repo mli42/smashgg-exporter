@@ -68,7 +68,7 @@ python src/main.py
 ```
 $ python src/main.py --help
 
-usage: main.py [-h] [--startDate STARTDATE] [--endDate ENDDATE]
+usage: main.py [-h] [--startDate STARTDATE] [--endDate ENDDATE] [--countryCode COUNTRYCODE] [--addrState ADDRSTATE]
 
 Fetches sets from start.gg and saves them into a postgres database
 
@@ -77,12 +77,16 @@ options:
   --startDate STARTDATE
                         fetch from startDate DD/MM/YYYY (default: 01/01/2025)
   --endDate ENDDATE     fetch up to endDate DD/MM/YYYY (default: 01/04/2025)
+  --countryCode COUNTRYCODE
+                        CountryCode of the tournament, can be set to `None` (default: FR)
+  --addrState ADDRSTATE
+                        AddrState of the tournament, can be set to `None` (default: IDF)
 ```
 
 `export_db_to_csv.py`
 ```
 $ python src/export_db_to_csv.py --help
-usage: export_db_to_csv.py [-h] [--startDate STARTDATE] [--endDate ENDDATE]
+usage: export_db_to_csv.py [-h] [--startDate STARTDATE] [--endDate ENDDATE] [--out OUT]
 
 Fetches sets from database and saves them in a local csv
 
