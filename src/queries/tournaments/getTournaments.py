@@ -46,11 +46,11 @@ def get_tournaments(
     if params['addrState']:
         BODY['variables']['addrState'] = params['addrState']
 
-    retries = 1
+    retries = 3
 
     for attempt in range(retries):
         if attempt != 0:
-            sleep(2)
+            sleep(60)
 
         try:
             response: StartggTournamentsResponse = requests \
