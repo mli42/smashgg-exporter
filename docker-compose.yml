@@ -1,0 +1,17 @@
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    container_name: smashgg-exporter-postgres
+    image: postgis/postgis:18-3.6-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5555:5432"
+    environment:
+      POSTGRES_DB: smashgg-exporter
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

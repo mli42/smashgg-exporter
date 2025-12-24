@@ -64,7 +64,23 @@ python src/main.py
 
 ### Usage
 
-`main.py`
+<details>
+<summary>Setup local database (optional)</summary>
+
+```bash
+# Create the database using docker compose
+make
+
+# Apply migrations
+alembic upgrade head
+```
+
+It's ready on url: `postgresql+psycopg2://postgres:postgres@localhost:5555/smashgg-exporter`
+</details>
+
+<details>
+<summary>main.py</summary>
+
 ```
 $ python src/main.py --help
 
@@ -82,8 +98,11 @@ options:
   --addrState ADDRSTATE
                         AddrState of the tournament, can be set to `None` (default: IDF)
 ```
+</details>
 
-`export_db_to_csv.py`
+<details>
+<summary>export_db_to_csv.py</summary>
+
 ```
 $ python src/export_db_to_csv.py --help
 usage: export_db_to_csv.py [-h] [--startDate STARTDATE] [--endDate ENDDATE] [--countryCode COUNTRYCODE] [--addrState ADDRSTATE] [--outSuffix OUTSUFFIX]
@@ -102,6 +121,7 @@ options:
   --outSuffix OUTSUFFIX
                         csv output filename to `output/{timestamp}-{outSuffix}.csv` (default: `output/{timestamp}.csv`)
 ```
+</details>
 
 
 ## Misc
