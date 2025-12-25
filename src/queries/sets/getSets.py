@@ -31,11 +31,11 @@ def get_event_sets(
         }
     }
 
-    retries = 1
+    retries = 3
 
     for attempt in range(retries):
         if attempt != 0:
-            sleep(2)
+            sleep(60)
 
         try:
             response: StartggEventSetsResponse = requests \
