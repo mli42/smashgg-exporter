@@ -1,10 +1,11 @@
 import enum
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import List, Optional
 
 from sqlalchemy import DateTime, Enum, ForeignKey, Integer, Text
 from sqlalchemy.orm import (DeclarativeBase, Mapped, MappedAsDataclass,
                             mapped_column, relationship)
+from sqlalchemy.sql import func
 
 
 class ActivityState(enum.Enum):
@@ -46,16 +47,19 @@ class TournamentDB(Base):
         passive_deletes=True,
     )
 
-    imported: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(timezone.utc)
+        init=False,
+        server_default=func.now(),
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc)
+        init=False,
+        server_default=func.now(),
+        onupdate=func.now()
     )
+
+    imported: Mapped[bool] = mapped_column(default=False)
 
     def __repr__(self) -> str:
         return f"TournamentDB(id={self.id!r}, name={self.name!r})"
@@ -84,16 +88,19 @@ class EventDB(Base):
         passive_deletes=True
     )
 
-    imported: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(timezone.utc)
+        init=False,
+        server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc)
+        init=False,
+        server_default=func.now(),
+        onupdate=func.now()
     )
+
+    imported: Mapped[bool] = mapped_column(default=False)
 
     def __repr__(self) -> str:
         return f"EventDB(id={self.id!r}, name={self.name!r})"
