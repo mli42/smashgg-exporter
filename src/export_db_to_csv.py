@@ -1,7 +1,6 @@
 import argparse
 import csv
-import datetime
-from datetime import date
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 from sqlalchemy import DATE, cast, select
@@ -22,8 +21,14 @@ def fetch_sets(args: argparse.Namespace):
         .join(EventDB)
         .join(TournamentDB)
         .where(
-            cast(EventDB.start_at, DATE) >= date.fromtimestamp(args.startDate),
-            cast(EventDB.start_at, DATE) <= date.fromtimestamp(args.endDate),
+            cast(EventDB.start_at, DATE) >= datetime.fromtimestamp(
+                args.startDate,
+                tz=timezone.utc
+            ),
+            cast(EventDB.start_at, DATE) <= datetime.fromtimestamp(
+                args.endDate,
+                tz=timezone.utc
+            ),
         )
         .options(
             joinedload(SetDB.event).joinedload(EventDB.tournament),
@@ -38,9 +43,9 @@ def fetch_sets(args: argparse.Namespace):
     if args.addrState:
         stmt = stmt.where(TournamentDB.addr_state == args.addrState)
 
-    fetch_time_start = datetime.datetime.now()
+    fetch_time_start = datetime.now()
     sets = session.scalars(stmt).all()
-    fetch_time_end = datetime.datetime.now()
+    fetch_time_end = datetime.now()
     delta_time = fetch_time_end - fetch_time_start
 
     session.close()
@@ -52,7 +57,7 @@ def fetch_sets(args: argparse.Namespace):
 def main(args: argparse.Namespace):
     sets = fetch_sets(args)
 
-    now_timestamp = datetime.datetime.now().timestamp()
+    now_timestamp = datetime.now().timestamp()
     output_filename = f"{now_timestamp}-{args.outSuffix}.csv" if args.outSuffix else f"{now_timestamp}.csv"
     output_path = f"output/{output_filename}"
 
@@ -76,7 +81,7 @@ def main(args: argparse.Namespace):
         for set_db in sets:
             wr.writerow([
                 set_db.id,
-                set_db.event.start_at.replace(tzinfo=datetime.timezone.utc),
+                set_db.event.start_at,
                 f"{set_db.event.tournament.name} ({set_db.event.tournament.id})",
                 f"{set_db.event.name} ({set_db.event.id})",
                 set_db.event.num_entrants,

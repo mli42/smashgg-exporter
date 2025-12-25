@@ -46,11 +46,11 @@ class TournamentDB(Base):
 
     imported: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=datetime.now(timezone.utc)
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc)
     )
@@ -66,7 +66,7 @@ class EventDB(Base):
     name: Mapped[str] = mapped_column(Text)
     num_entrants: Mapped[int] = mapped_column(Integer)
     slug: Mapped[str] = mapped_column(Text)
-    start_at: Mapped[datetime] = mapped_column(DateTime)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     state: Mapped[ActivityState] = mapped_column(Enum(ActivityState))
 
     tournament_id: Mapped[int] = mapped_column(
@@ -82,11 +82,11 @@ class EventDB(Base):
 
     imported: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=datetime.now(timezone.utc)
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc)
     )

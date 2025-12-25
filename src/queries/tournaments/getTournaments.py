@@ -100,8 +100,7 @@ def get_tournaments_iter(
                         slug=event['slug'],
                         start_at=(
                             datetime
-                            .fromtimestamp(event['startAt'])
-                            .replace(tzinfo=timezone.utc)
+                            .fromtimestamp(event['startAt'], tz=timezone.utc)
                         ),
                         state=event['state'],
                     ) for event in tournament['events']

@@ -15,3 +15,5 @@ services:
       POSTGRES_DB: smashgg-exporter
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      TZ: UTC
+      PGTZ: UTC
