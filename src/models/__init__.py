@@ -41,7 +41,9 @@ class TournamentDB(Base):
     addr_state: Mapped[str] = mapped_column(Text)
 
     events: Mapped[List["EventDB"]] = relationship(
-        back_populates="tournament"
+        back_populates="tournament",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
     imported: Mapped[bool] = mapped_column(default=False)
@@ -70,14 +72,16 @@ class EventDB(Base):
     state: Mapped[ActivityState] = mapped_column(Enum(ActivityState))
 
     tournament_id: Mapped[int] = mapped_column(
-        ForeignKey("tournament.id"), init=False
+        ForeignKey("tournament.id", ondelete="CASCADE"), init=False
     )
     tournament: Mapped["TournamentDB"] = relationship(
         back_populates="events", init=False
     )
 
     sets: Mapped[List["SetDB"]] = relationship(
-        back_populates="event", init=False
+        back_populates="event", init=False,
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
 
     imported: Mapped[bool] = mapped_column(default=False)
@@ -123,7 +127,7 @@ class SetDB(Base):
     )
 
     event_id: Mapped[int] = mapped_column(
-        ForeignKey("event.id"), index=True, init=False
+        ForeignKey("event.id", ondelete="CASCADE"), index=True, init=False
     )
     event: Mapped["EventDB"] = relationship(
         back_populates="sets"
