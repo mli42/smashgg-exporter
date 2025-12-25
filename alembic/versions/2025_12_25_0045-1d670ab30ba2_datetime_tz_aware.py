@@ -26,7 +26,7 @@ def upgrade() -> None:
         'event', 'start_at',
         existing_type=postgresql.TIMESTAMP(),
         type_=sa.DateTime(timezone=True),
-        postgresql_using="start_at AT TIME ZONE 'UTC'",
+        postgresql_using="start_at AT TIME ZONE 'Europe/Paris'",
         existing_nullable=False
     )
     op.alter_column(
