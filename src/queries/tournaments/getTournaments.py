@@ -49,8 +49,9 @@ def get_tournaments(
     retries = 3
 
     for attempt in range(retries):
+        BODY['variables']['perPage'] = 50 - (attempt * 5)
         if attempt != 0:
-            sleep(60)
+            sleep(20)
 
         try:
             response: StartggTournamentsResponse = requests \

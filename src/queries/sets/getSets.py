@@ -34,8 +34,9 @@ def get_event_sets(
     retries = 3
 
     for attempt in range(retries):
+        BODY['variables']['perPage'] = 40 - (attempt * 5)
         if attempt != 0:
-            sleep(60)
+            sleep(20)
 
         try:
             response: StartggEventSetsResponse = requests \
