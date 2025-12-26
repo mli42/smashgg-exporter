@@ -63,76 +63,71 @@ def upgrade() -> None:
         unique=False)
     # 2. Migrate data
 
-    op.execute("""
-        WITH players_per_event AS (
-            SELECT DISTINCT
-                event_id,
-                winner_player_id AS player_id
-            FROM "set"
-            UNION
-            SELECT DISTINCT
-                event_id,
-                loser_player_id AS player_id
-            FROM "set"
-        ),
-        inserted_teams AS (
-            INSERT INTO team DEFAULT VALUES
-            SELECT COUNT(*) FROM players_per_event
-            RETURNING id
-        ),
-        numbered_teams AS (
-            SELECT
-                id AS team_id,
-                ROW_NUMBER() OVER (ORDER BY id) AS rn
-            FROM inserted_teams
-        ),
-        numbered_players AS (
-            SELECT
-                event_id,
-                player_id,
-                ROW_NUMBER() OVER (ORDER BY event_id, player_id) AS rn
-            FROM players_per_event
+    connection = op.get_bind()
+    metadata = sa.MetaData()
+
+    set_table = sa.Table(
+        "set",
+        metadata,
+        sa.Column("id", sa.Integer),
+        sa.Column("event_id", sa.Integer),
+        sa.Column("winner_player_id", sa.Integer),
+        sa.Column("loser_player_id", sa.Integer),
+        sa.Column("winner_team_id", sa.Integer),
+        sa.Column("loser_team_id", sa.Integer),
+    )
+
+    team_table = sa.Table(
+        "team",
+        metadata,
+        sa.Column("id", sa.Integer),
+    )
+
+    team_player_table = sa.Table(
+        "team_player",
+        metadata,
+        sa.Column("team_id", sa.Integer),
+        sa.Column("player_id", sa.Integer),
+    )
+
+    # cache: (event_id, player_id) -> team_id
+    team_cache = {}
+
+    rows = connection.execute(
+        sa.select(
+            set_table.c.id,
+            set_table.c.event_id,
+            set_table.c.winner_player_id,
+            set_table.c.loser_player_id,
         )
-        INSERT INTO team_player (team_id, player_id)
-        SELECT
-            nt.team_id,
-            np.player_id
-        FROM numbered_teams nt
-        JOIN numbered_players np
-        ON nt.rn = np.rn
-    """)
+    ).fetchall()
 
-    op.execute("""
-        UPDATE "set" s
-        SET winner_team_id = tp.team_id
-        FROM team_player tp
-        JOIN (
-            SELECT DISTINCT
-                event_id,
-                winner_player_id AS player_id
-            FROM "set"
-        ) p
-        ON tp.player_id = p.player_id
-        WHERE
-            s.event_id = p.event_id
-            AND s.winner_player_id = p.player_id
-        """)
+    for set_id, event_id, winner_pid, loser_pid in rows:
+        for pid in (winner_pid, loser_pid):
+            key = (event_id, pid)
 
-    op.execute("""
-        UPDATE "set" s
-        SET loser_team_id = tp.team_id
-        FROM team_player tp
-        JOIN (
-            SELECT DISTINCT
-                event_id,
-                loser_player_id AS player_id
-            FROM "set"
-        ) p
-        ON tp.player_id = p.player_id
-        WHERE
-            s.event_id = p.event_id
-            AND s.loser_player_id = p.player_id
-        """)
+            if key not in team_cache:
+                team_id = connection.scalar(
+                    team_table.insert().returning(team_table.c.id)
+                )
+
+                connection.execute(
+                    team_player_table.insert().values(
+                        team_id=team_id,
+                        player_id=pid,
+                    )
+                )
+
+                team_cache[key] = team_id
+
+        connection.execute(
+            set_table.update()
+            .where(set_table.c.id == set_id)
+            .values(
+                winner_team_id=team_cache[(event_id, winner_pid)],
+                loser_team_id=team_cache[(event_id, loser_pid)],
+            )
+        )
 
     op.alter_column("set", "winner_team_id", nullable=False)
     op.alter_column("set", "loser_team_id", nullable=False)
