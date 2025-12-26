@@ -96,7 +96,7 @@ def get_tournaments_iter(
                     EventDB(
                         id=event['id'],
                         name=event['name'],
-                        num_entrants=event['numEntrants'],
+                        num_entrants=event['numEntrants'] or 0,
                         slug=event['slug'],
                         start_at=(
                             datetime
