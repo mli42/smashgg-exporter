@@ -77,6 +77,7 @@ class Slot(TypedDict):
 
 
 class Entrant(TypedDict):
+    id: int
     initialSeedNum: int
     participants: list["Participants"]
 

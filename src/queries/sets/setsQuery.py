@@ -21,6 +21,7 @@ query EventsQuery(
         id
         slots {
           entrant {
+            id
             initialSeedNum
             participants {
               player {
