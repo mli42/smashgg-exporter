@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Integer, Text
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, Table, Text
 from sqlalchemy.orm import (DeclarativeBase, Mapped, MappedAsDataclass,
                             mapped_column, relationship)
 from sqlalchemy.sql import func
@@ -117,20 +117,20 @@ class SetDB(Base):
     winner_score: Mapped[int] = mapped_column(Integer)
     loser_score: Mapped[int] = mapped_column(Integer)
 
-    winner_player_id: Mapped[int] = mapped_column(
-        ForeignKey("player.id"), init=False
+    winner_team_id: Mapped[int] = mapped_column(
+        ForeignKey("team.id"), init=False
     )
-    winner_player: Mapped["PlayerDB"] = relationship(
+    winner_team: Mapped["TeamDB"] = relationship(
         back_populates="winning_sets",
-        foreign_keys=[winner_player_id]
+        foreign_keys=[winner_team_id]
     )
 
-    loser_player_id: Mapped[int] = mapped_column(
-        ForeignKey("player.id"), init=False
+    loser_team_id: Mapped[int] = mapped_column(
+        ForeignKey("team.id"), init=False
     )
-    loser_player: Mapped["PlayerDB"] = relationship(
+    loser_team: Mapped["TeamDB"] = relationship(
         back_populates="losing_sets",
-        foreign_keys=[loser_player_id]
+        foreign_keys=[loser_team_id]
     )
 
     event_id: Mapped[int] = mapped_column(
@@ -144,20 +144,51 @@ class SetDB(Base):
         return f"SetDB(id={self.id!r})"
 
 
+team_player = Table(
+    "team_player",
+    Base.metadata,
+    Column("team_id", ForeignKey("team.id"), primary_key=True, index=True),
+    Column("player_id", ForeignKey("player.id"), primary_key=True, index=True),
+)
+
+
+class TeamDB(Base):
+    __tablename__ = "team"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True, index=True, autoincrement=True
+    )
+
+    players: Mapped[List["PlayerDB"]] = relationship(
+        secondary=team_player,
+        back_populates="teams",
+        init=False
+    )
+
+    winning_sets: Mapped[List["SetDB"]] = relationship(
+        back_populates="winner_team",
+        foreign_keys="SetDB.winner_team_id",
+        init=False
+    )
+    losing_sets: Mapped[List["SetDB"]] = relationship(
+        back_populates="loser_team",
+        foreign_keys="SetDB.loser_team_id",
+        init=False
+    )
+
+    def __repr__(self) -> str:
+        return f"TeamDB(id={self.id!r})"
+
+
 class PlayerDB(Base):
     __tablename__ = "player"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     gamer_tag: Mapped[str] = mapped_column(Text)
 
-    winning_sets: Mapped[List["SetDB"]] = relationship(
-        back_populates="winner_player",
-        foreign_keys="SetDB.winner_player_id",
-        init=False
-    )
-    losing_sets: Mapped[List["SetDB"]] = relationship(
-        back_populates="loser_player",
-        foreign_keys="SetDB.loser_player_id",
+    teams: Mapped[List["TeamDB"]] = relationship(
+        secondary=team_player,
+        back_populates="players",
         init=False
     )
 

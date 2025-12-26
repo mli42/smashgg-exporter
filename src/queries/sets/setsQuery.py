@@ -23,6 +23,7 @@ query EventsQuery(
           entrant {
             initialSeedNum
             participants {
+              id
               player {
                 id
                 gamerTag
