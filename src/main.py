@@ -2,14 +2,14 @@ import argparse
 import os
 import signal
 import sys
-from typing import TypedDict
+from typing import List, TypedDict
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from customTypes.startgg import EventSet
-from models import EventDB, PlayerDB, SetDB, TournamentDB
+from models import EventDB, PlayerDB, SetDB, TeamDB, TournamentDB
 from queries.sets.getSets import get_event_sets_iter
 from queries.tournaments.getTournaments import get_tournaments_iter
 from utils.constants import STARTGG_BASE_URL
@@ -21,6 +21,11 @@ from utils.shouldSkipEvent import should_skip_event
 class Player(TypedDict):
     id: int
     gamer_tag: str
+
+
+class Team(TypedDict):
+    id: int
+    players: List[Player]
     seed: int
     score: int
 
@@ -40,38 +45,62 @@ def get_player_db(player: Player, session: Session) -> PlayerDB:
     return saved_player_db
 
 
-def handle_set(event_set: EventSet, event: EventDB, session: Session) -> SetDB:
-    player1: Player = {
-        'id': event_set['slots'][0]['entrant']['participants'][0]['player']['id'],
-        'gamer_tag': event_set['slots'][0]['entrant']['participants'][0]['player']['gamerTag'],
-        'seed': event_set['slots'][0]['entrant']['initialSeedNum'],
-        'score': event_set['slots'][0]['standing']['stats']['score']['value'] or 0,
-    }
-
-    player2: Player = {
-        'id': event_set['slots'][1]['entrant']['participants'][0]['player']['id'],
-        'gamer_tag': event_set['slots'][1]['entrant']['participants'][0]['player']['gamerTag'],
-        'seed': event_set['slots'][1]['entrant']['initialSeedNum'],
-        'score': event_set['slots'][1]['standing']['stats']['score']['value'] or 0,
-    }
-
-    winnerPlayer, loserPlayer = (
-        player1, player2
-    ) if player1['score'] > player2['score'] else (
-        player2, player1
+def get_team_db(team: Team, session: Session) -> TeamDB:
+    saved_team_db = session.scalar(
+        select(TeamDB).where(TeamDB.id == team['id'])
     )
 
-    saved_winner_player_db = get_player_db(winnerPlayer, session)
-    saved_loser_player_db = get_player_db(loserPlayer, session)
+    if saved_team_db is None:
+        players = [
+            get_player_db(player, session) for player in team['players']
+        ]
+        saved_team_db = TeamDB(
+            id=team['id'],
+            players=players
+        )
+        session.add(saved_team_db)
+
+    return saved_team_db
+
+
+def handle_set(event_set: EventSet, event: EventDB, session: Session) -> SetDB:
+    team1: Team = {
+        'id': event_set['slots'][0]['entrant']['id'],
+        'seed': event_set['slots'][0]['entrant']['initialSeedNum'],
+        'score': event_set['slots'][0]['standing']['stats']['score']['value'] or 0,
+        'players': [{
+            'id': participant['player']['id'],
+            'gamer_tag': participant['player']['gamerTag'],
+        } for participant in event_set['slots'][0]['entrant']['participants']]
+    }
+
+    team2: Team = {
+        'id': event_set['slots'][1]['entrant']['id'],
+        'seed': event_set['slots'][1]['entrant']['initialSeedNum'],
+        'score': event_set['slots'][1]['standing']['stats']['score']['value'] or 0,
+        'players': [{
+            'id': participant['player']['id'],
+            'gamer_tag': participant['player']['gamerTag'],
+        } for participant in event_set['slots'][1]['entrant']['participants']]
+    }
+
+    winnerTeam, loserTeam = (
+        team1, team2
+    ) if team1['score'] > team2['score'] else (
+        team2, team1
+    )
+
+    saved_winner_team_db = get_team_db(winnerTeam, session)
+    saved_loser_team_db = get_team_db(loserTeam, session)
 
     saved_set_db = SetDB(
         id=event_set['id'],
-        winner_seed=winnerPlayer['seed'],
-        loser_seed=loserPlayer['seed'],
-        winner_score=winnerPlayer['score'],
-        loser_score=loserPlayer['score'],
-        winner_player=saved_winner_player_db,
-        loser_player=saved_loser_player_db,
+        winner_seed=winnerTeam['seed'],
+        loser_seed=loserTeam['seed'],
+        winner_score=winnerTeam['score'],
+        loser_score=loserTeam['score'],
+        winner_team=saved_winner_team_db,
+        loser_team=saved_loser_team_db,
         event=event
     )
     session.add(saved_set_db)

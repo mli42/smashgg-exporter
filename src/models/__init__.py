@@ -162,7 +162,6 @@ class TeamDB(Base):
     players: Mapped[List["PlayerDB"]] = relationship(
         secondary=team_player,
         back_populates="teams",
-        init=False
     )
 
     winning_sets: Mapped[List["SetDB"]] = relationship(
