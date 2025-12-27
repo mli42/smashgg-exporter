@@ -18,6 +18,7 @@ def fetch_sets(args: argparse.Namespace):
 
     stmt = (
         select(SetDB)
+        .order_by(SetDB.id)
         .join(EventDB)
         .join(TournamentDB)
         .where(
@@ -75,7 +76,7 @@ def main(args: argparse.Namespace):
             'set_id',
             'event_date',
             'tournament',
-            'event'
+            'event',
             'event_entrants',
             *[f"winner_{i+1}" for i in range(max_players_count)],
             *[f"loser_{i+1}" for i in range(max_players_count)],
