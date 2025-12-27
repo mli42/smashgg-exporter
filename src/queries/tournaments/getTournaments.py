@@ -31,12 +31,13 @@ def get_tournaments(
         'Authorization': f"Bearer {STARTGG_TOKEN}",
     }
 
+    DEFAULT_PER_PAGE = 90
     BODY = {
         "query": TOURNAMENTS_QUERY,
         "variables": {
             "afterDate": params["afterDate"],
             "beforeDate": params["beforeDate"],
-            "perPage": 50,
+            "perPage": DEFAULT_PER_PAGE,
             "page": page,
         }
     }
@@ -49,7 +50,7 @@ def get_tournaments(
     retries = 3
 
     for attempt in range(retries):
-        BODY['variables']['perPage'] = 50 - (attempt * 5)
+        BODY['variables']['perPage'] = DEFAULT_PER_PAGE - (attempt * 10)
         if attempt != 0:
             sleep(20)
 

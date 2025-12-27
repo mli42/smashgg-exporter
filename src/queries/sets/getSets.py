@@ -22,11 +22,12 @@ def get_event_sets(
         'Authorization': f"Bearer {STARTGG_TOKEN}",
     }
 
+    DEFAULT_PER_PAGE = 40
     BODY = {
         "query": SETS_QUERY,
         "variables": {
             "eventId": eventId,
-            "perPage": 40,
+            "perPage": DEFAULT_PER_PAGE,
             "page": page,
         }
     }
@@ -34,7 +35,7 @@ def get_event_sets(
     retries = 3
 
     for attempt in range(retries):
-        BODY['variables']['perPage'] = 40 - (attempt * 5)
+        BODY['variables']['perPage'] = DEFAULT_PER_PAGE - (attempt * 5)
         if attempt != 0:
             sleep(20)
 
