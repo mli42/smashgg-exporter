@@ -147,7 +147,11 @@ class SetDB(Base):
 team_player = Table(
     "team_player",
     Base.metadata,
-    Column("team_id", ForeignKey("team.id"), primary_key=True, index=True),
+    Column(
+        "team_id",
+        ForeignKey("team.id", ondelete="CASCADE"),
+        primary_key=True,
+        index=True),
     Column("player_id", ForeignKey("player.id"), primary_key=True, index=True),
 )
 
